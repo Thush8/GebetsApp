@@ -8,7 +8,21 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Prayer Times</string>
-    <string name="home_header_title">Prayer Times in</string>
+    <string name="home_first_time">Fajr</string>
+    <string name="home_second_time">Sunrise</string>
+    <string name="home_third_time">Dhuhr</string>
+    <string name="home_fourth_time">Asr</string>
+    <string name="home_fifth_time">Maghrib</string>
+    <string name="home_sixth_time">Ishaa</string>
+
+    <string name="first_time">00:00</string>
+    <string name="second_time">00:00</string>
+    <string name="third_time">00:00</string>
+    <string name="fourth_time">00:00</string>
+    <string name="fifth_time">00:00</string>
+    <string name="sixth_time">00:00</string>
+
+    <string name="city"></string>
 
     <string name="menu_temp1">Temp1</string>
     <string name="menu_temp2">Temp2</string>
