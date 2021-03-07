@@ -2,7 +2,6 @@ package com.example.gebetsapp.ui.home;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.VoiceInteractor;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -27,12 +26,16 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class HomeFragment extends Fragment {
 
 
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
     private FusedLocationProviderClient fusedLocationClient;
-    private TextView user_location;
+    private TextView user_location, datetime;
     private TextView[] time;
     private double latitude = 0, longitude = 0;
 
@@ -41,6 +44,7 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         user_location = root.findViewById(R.id.user_location);
+        datetime = root.findViewById(R.id.date);
         time = new TextView[6];
         time[0] = root.findViewById(R.id.TextViewTime);
         time[1] = root.findViewById(R.id.TextViewTime2);
@@ -55,7 +59,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
 
                 if(fetchLocation()) {
-                    fetchTimes(time);
+                    fetchTimes();
                 }
             }
         });
@@ -63,26 +67,51 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    private void fetchTimes(TextView[] time){
+    private void fetchTimes(){
         RequestQueue queue = Volley.newRequestQueue(getContext());
-        latitude = 51.508515;
-        longitude = -0.1254872;
-        int month = 4, year = 2017;
-        String url =" http://api.aladhan.com/v1/calendar?latitude="+ latitude +"&longitude="+ longitude +
-                "&method=2&month="+ month +"&year="+ year;
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+        String month = currentDate.substring(3,5);
+        String year = currentDate.substring(6);
+        datetime.setText(currentDate + " " + currentTime);
+        //Koordinaten Essen Altendorf
+        latitude = 51.458184;
+        longitude = 6.998448;
+        //month = 4, year = 2017;
+        String url = "https://api.aladhan.com/v1/calendar?latitude="+ latitude +"&longitude="+ longitude +
+                "&method=2&month="+ month +"&year="+ year +""+"/";
+        System.out.println(url);
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        time[0].setText("Response is: "+ response.substring(0,10));
+                        int day = response.indexOf(currentDate);
+                        int time0 = response.lastIndexOf("Fajr",day) + 7;
+                        int time1 = response.lastIndexOf("Sunrise",day) + 10;
+                        int time2 = response.lastIndexOf("Dhuhr",day) + 8;
+                        int time3 = response.lastIndexOf("Asr",day) + 6;
+                        int time4 = response.lastIndexOf("Maghrib",day) + 10;
+                        int time5 = response.lastIndexOf("Isha",day) + 7;
+
+                        time[0].setText(response.substring(time0,time0 + 5));
+
+                        time[1].setText(response.substring(time1,time1 + 5));
+
+                        time[2].setText(response.substring(time2,time2 + 5));
+
+                        time[3].setText(response.substring(time3,time3 + 5));
+
+                        time[4].setText(response.substring(time4,time4 + 5));
+
+                        time[5].setText(response.substring(time5,time5 + 5));
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 time[0].setText("That didn't work!");
+                System.out.println(error);
             }
         });
 
@@ -132,13 +161,12 @@ public class HomeFragment extends Fragment {
                                 // Logic to handle location object
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();
-
+                                System.out.println("Got Location");
                                 user_location.setText("Latitude = "+latitude + "\nLongitude = " + longitude);
-
                             }
                         }
                     });
-            return true;
+            return latitude + longitude != 0;
         }
         return false;
     }

@@ -22,7 +22,8 @@
     <string name="fifth_time">00:00</string>
     <string name="sixth_time">00:00</string>
 
-    <string name="city"></string>
+    <string name="city">Position not found</string>
+    <string name="date">00/00/0000</string>
 
     <string name="menu_temp1">Temp1</string>
     <string name="menu_temp2">Temp2</string>
